@@ -1,0 +1,27 @@
+.view {
+    width: 100%;
+}
+
+
+.frame {
+    height: 100%;
+    width: 100%;
+    border: 3px solid $secondary-background;
+}
+
+.header {
+    background-color: $secondary-background;
+
+    padding: 8px 16px;
+    flex: 1;
+}
+
+.title {
+    font-size: $font-sm;
+}
+
+.status {
+    font-size: $font-s;
+    font-family: "Light";
+    text-transform: lowercase;
+}

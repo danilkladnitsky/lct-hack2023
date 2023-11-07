@@ -1,8 +1,9 @@
 import { MantineProvider, createTheme } from '@mantine/core';
-import { Header, Sidebar } from '@/widgets/Header';
+import { Header } from '@/widgets';
 
 import '@mantine/core/styles.css';
 import styles from './App.module.scss';
+import { MonitoringPage } from '@/pages';
 
 const theme = createTheme({});
 
@@ -10,10 +11,8 @@ export function App() {
   return (
     <MantineProvider defaultColorScheme="dark" theme={theme}>
       <div className={styles.layout}>
-        <Header />
-        <main>
-        <Sidebar />
-        </main>
+        <Header className={styles.appHeader} />
+        <MonitoringPage className={styles.currentPage} />
       </div>
     </MantineProvider>
   );

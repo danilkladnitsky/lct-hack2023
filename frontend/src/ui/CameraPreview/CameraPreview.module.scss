@@ -1,0 +1,16 @@
+.preview {
+    height: 180px;
+    position: relative;
+
+    background-color: $secondary-background;
+    border: 1px solid $accent-success;
+}
+
+.title {
+    position: absolute;
+
+    font-size: $font-s;
+
+    bottom: 8px;
+    right: 8px;
+}
