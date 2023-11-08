@@ -1,0 +1,20 @@
+.frames {
+    width: 100%;
+    max-width: inherit;
+    padding: 8px;
+    overflow-x: auto;
+}
+
+.list {
+    height: 100px;
+    width: inherit;
+    display: flex;
+    gap: 8px;
+}
+
+.frame {
+    height: 100%;
+    width: 120px;
+
+    background-color: $secondary-background;
+}
