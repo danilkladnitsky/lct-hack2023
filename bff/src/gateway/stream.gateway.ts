@@ -4,6 +4,7 @@ import {
   SubscribeMessage,
   MessageBody,
   ConnectedSocket,
+  OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
 
@@ -14,12 +15,27 @@ type StreamResource = {
   name: string;
 };
 
-@WebSocketGateway({ namespace: 'stream' })
-export class StreamGateway {
+type CameraFrame = {
+  camera: string;
+  frame: Buffer;
+}
+
+@WebSocketGateway({
+  namespace: 'stream',
+  transports: ['websocket'],
+  cors: true,
+})
+export class StreamGateway implements OnGatewayConnection {
   @WebSocketServer()
   server: Server;
   ffmpegClient: RtspManager = new RtspManager();
   streamResources: StreamResource[] = [];
+  cachedFrames: CameraFrame[] = [];
+
+  handleConnection(@ConnectedSocket() client: Socket) {
+    client.emit('added-stream', this.streamResources);
+    client.emit('cameras', this.cachedFrames);
+  }
 
   @SubscribeMessage('create-stream')
   createStream(
@@ -27,7 +43,7 @@ export class StreamGateway {
     @ConnectedSocket() client: Socket,
   ) {
     this.streamResources.push(resource);
-    client.emit('debug', this.streamResources);
+    this.server.emit('added-stream', this.streamResources);
   }
 
   @SubscribeMessage('request-frame')
@@ -46,14 +62,15 @@ export class StreamGateway {
   }
 
   sendFrame = (
-    cameraIdx: string,
+    camera: string,
     client: Socket,
     frameIsReady: boolean,
-    frame: string,
+    frame: Buffer,
   ) => {
     if (frameIsReady) {
-      const channel = `camera/${cameraIdx}`;
-      client.emit(channel, frame);
+      const newFrame = { camera, frame };
+      client.emit('cameras', newFrame);
+      this.cachedFrames.push(newFrame);
     }
   };
 }
