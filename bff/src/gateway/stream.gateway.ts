@@ -1,28 +1,59 @@
 import {
   WebSocketGateway,
   WebSocketServer,
-  OnGatewayInit,
+  SubscribeMessage,
+  MessageBody,
+  ConnectedSocket,
 } from '@nestjs/websockets';
-import { Server } from 'socket.io';
+import { Server, Socket } from 'socket.io';
 
 import { RtspManager } from '../lib/rtsp.js';
 
-const RTSP_URL =
-  "'rtsp://admin:A1234567@188.170.176.190:8029/Streaming/Channels/101?transportmode=unicast&profile=Profile_1'";
+type StreamResource = {
+  url: string;
+  name: string;
+};
 
 @WebSocketGateway({ namespace: 'stream' })
-export class StreamGateway implements OnGatewayInit {
+export class StreamGateway {
   @WebSocketServer()
   server: Server;
+  ffmpegClient: RtspManager = new RtspManager();
+  streamResources: StreamResource[] = [];
 
-  stream: RtspManager;
-
-  afterInit() {
-    this.stream = new RtspManager();
-    console.log('afterInit');
+  @SubscribeMessage('create-stream')
+  createStream(
+    @MessageBody() resource: StreamResource,
+    @ConnectedSocket() client: Socket,
+  ) {
+    this.streamResources.push(resource);
+    client.emit('debug', this.streamResources);
   }
 
-  handleConnection() {
-    this.stream.createStream(RTSP_URL);
+  @SubscribeMessage('request-frame')
+  requestFrame(
+    @MessageBody() camera: string,
+    @ConnectedSocket() client: Socket,
+  ) {
+    const cameraResource = this.streamResources.find((c) => c.name === camera);
+
+    if (!cameraResource) {
+      return null;
+    }
+
+    const callbackFn = this.sendFrame.bind(this, cameraResource.name, client);
+    this.ffmpegClient.getFrame(cameraResource.url, callbackFn);
   }
+
+  sendFrame = (
+    cameraIdx: string,
+    client: Socket,
+    frameIsReady: boolean,
+    frame: string,
+  ) => {
+    if (frameIsReady) {
+      const channel = `camera/${cameraIdx}`;
+      client.emit(channel, frame);
+    }
+  };
 }
