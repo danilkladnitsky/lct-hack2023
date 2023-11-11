@@ -24,8 +24,8 @@ def street_detect( img ,yolov8_model_path, score_limit, device = 'cpu'):
     result = get_sliced_prediction(
         img,
         detection_model,
-        slice_height=256,
-        slice_width=256,
+        slice_height=640,
+        slice_width=640,
         overlap_height_ratio=0.2,
         overlap_width_ratio=0.2
     )
