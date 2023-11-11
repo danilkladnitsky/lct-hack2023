@@ -4,7 +4,7 @@ FROM python:3.9
 WORKDIR /ml
 # Скачиваем/обновляем необходимые библиотеки для проекта 
 COPY requirements.txt /ml
-RUN pip3 install --upgrade pip -r requirements.txt
+RUN python pip install -r requirements.txt
 # |ВАЖНЫЙ МОМЕНТ| копируем содержимое папки, где находится Dockerfile, 
 # в рабочую директорию контейнера
 COPY . /ml
