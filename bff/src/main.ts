@@ -7,7 +7,9 @@ const fs = require('fs');
 const path = require('path');
 
 const httpsOptions = {
-  cert: fs.readFileSync(path.join(__dirname, '../src/certificate/fullchain.pem')),
+  cert: fs.readFileSync(
+    path.join(__dirname, '../src/certificate/fullchain.pem'),
+  ),
   key: fs.readFileSync(path.join(__dirname, '../src/certificate/privkey.pem')),
 };
 
