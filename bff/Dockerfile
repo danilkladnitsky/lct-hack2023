@@ -1,4 +1,6 @@
 # Base image
+FROM jrottenberg/ffmpeg
+
 FROM node:20
 
 # Create app directory
