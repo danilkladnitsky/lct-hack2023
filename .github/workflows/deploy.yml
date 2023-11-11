@@ -30,4 +30,4 @@ jobs:
         name: Check service
         run: docker ps -a
       - name: run ML model
-        run: screen -d -m ML/Flask.py
+        run: killall screen && screen -d -m ML/Flask.py
