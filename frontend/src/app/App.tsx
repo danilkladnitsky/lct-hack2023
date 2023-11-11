@@ -1,9 +1,9 @@
 import { MantineProvider, createTheme } from '@mantine/core';
-import { Header } from '@/widgets';
+import { Header } from '../widgets';
 
 import '@mantine/core/styles.css';
 import styles from './App.module.scss';
-import { MonitoringPage } from '@/pages';
+import { MonitoringPage } from '../pages';
 import { SocketContextProvider } from '../context/SocketContext';
 
 const theme = createTheme({});

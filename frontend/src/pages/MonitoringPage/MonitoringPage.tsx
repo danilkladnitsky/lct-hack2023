@@ -1,13 +1,12 @@
 import { Grid } from '@mantine/core';
 
-import { Sidebar, CameraView } from '@/widgets';
+import { Sidebar, CameraView, AddCamerasForm } from '../../widgets';
 
 import classNames from 'classnames';
 
 import styles from './MonitoringPage.module.scss';
 import { PageProps } from '../pages.types';
 import { useSocketContext } from '../../context/SocketContext';
-import { AddCamerasForm } from '../../widgets';
 
 export const MonitoringPage = ({ className }: PageProps) => {
   const { selectedCamera, cameras } = useSocketContext();
