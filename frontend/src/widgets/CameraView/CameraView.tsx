@@ -9,9 +9,7 @@ export const CameraView = () => {
 
   const lastFrame = cameraFrames.find(c => c.camera === selectedCamera?.name);
 
-  const raw = btoa(unescape(encodeURIComponent(lastFrame?.frame)));
-
-  const frameContent = `data:image/jpg;base64, ${raw}`;
+  const frameContent = `data:image/jpg;base64, ${lastFrame?.frame}`;
 
   return (
     <div className={styles.frame}>

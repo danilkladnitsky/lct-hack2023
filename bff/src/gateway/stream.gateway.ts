@@ -7,6 +7,7 @@ import {
   OnGatewayConnection,
 } from '@nestjs/websockets';
 import { Server, Socket } from 'socket.io';
+const schedule = require('node-schedule');
 
 import { RtspManager } from '../lib/rtsp.js';
 
@@ -18,7 +19,7 @@ type StreamResource = {
 type CameraFrame = {
   camera: string;
   frame: Buffer;
-}
+};
 
 @WebSocketGateway({
   namespace: 'stream',
@@ -30,47 +31,38 @@ export class StreamGateway implements OnGatewayConnection {
   server: Server;
   ffmpegClient: RtspManager = new RtspManager();
   streamResources: StreamResource[] = [];
-  cachedFrames: CameraFrame[] = [];
 
   handleConnection(@ConnectedSocket() client: Socket) {
     client.emit('added-stream', this.streamResources);
-    client.emit('cameras', this.cachedFrames);
   }
 
   @SubscribeMessage('create-stream')
-  createStream(
-    @MessageBody() resource: StreamResource,
-    @ConnectedSocket() client: Socket,
-  ) {
+  createStream(@MessageBody() resource: StreamResource) {
     this.streamResources.push(resource);
     this.server.emit('added-stream', this.streamResources);
+
+    schedule.scheduleJob(
+      '*/5 * * * * *',
+      this.requestFrame.bind(this, resource.name),
+    );
   }
 
-  @SubscribeMessage('request-frame')
-  requestFrame(
-    @MessageBody() camera: string,
-    @ConnectedSocket() client: Socket,
-  ) {
+  async requestFrame(camera: string) {
     const cameraResource = this.streamResources.find((c) => c.name === camera);
 
     if (!cameraResource) {
       return null;
     }
 
-    const callbackFn = this.sendFrame.bind(this, cameraResource.name, client);
-    this.ffmpegClient.getFrame(cameraResource.url, callbackFn);
-  }
+    const { isOk, message } = await this.ffmpegClient.getFrame(
+      cameraResource.url,
+    );
 
-  sendFrame = (
-    camera: string,
-    client: Socket,
-    frameIsReady: boolean,
-    frame: Buffer,
-  ) => {
-    if (frameIsReady) {
-      const newFrame = { camera, frame };
-      client.emit('cameras', newFrame);
-      this.cachedFrames.push(newFrame);
+    console.log(isOk, message)
+
+    if (isOk) {
+      const newFrame = { camera, frame: message };
+      this.server.emit('cameras', newFrame);
     }
-  };
+  }
 }

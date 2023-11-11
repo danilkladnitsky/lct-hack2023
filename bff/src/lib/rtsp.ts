@@ -1,17 +1,17 @@
 const ffmpeg = require('fluent-ffmpeg');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-const fs = require('node:fs');
+const fs = require('fs/promises');
 
 ffmpeg.setFfmpegPath('/usr/bin/ffmpeg');
 
 export class RtspManager {
   ffmpeg: any;
 
-  async getFrame(url: string, callbackFn: (isOk: boolean, data: any) => void) {
+  async getFrame(url: string) {
     const args = [
       'ffmpeg',
-      // '-loglevel quiet',
+      '-loglevel quiet',
       '-rtsp_transport tcp -y',
       '-i',
       `'${url}'`,
@@ -22,22 +22,22 @@ export class RtspManager {
 
     const cmd = args.join(' ');
 
-    console.log(cmd);
-
     try {
-      const { stderr } = await exec(cmd, { maxBuffer: undefined });
+      const { stderr, stdout } = await exec(cmd, { maxBuffer: undefined });
 
       if (stderr) {
-        console.error(stderr);
-        return callbackFn?.(false, stderr);
+        console.error(stderr, stdout);
+        return { isOk: false, message: stderr };
       }
 
       const contents = await fs.readFile('static/myFrame.jpg', {
         encoding: 'base64',
       });
-      return callbackFn?.(true, contents);
+
+      return { isOk: true, message: contents };
     } catch (err) {
       console.error(err);
+      return { isOk: false, message: err };
     }
   }
 }

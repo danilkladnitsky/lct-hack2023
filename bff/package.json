@@ -28,6 +28,7 @@
     "@nestjs/websockets": "^10.2.8",
     "@types/fluent-ffmpeg": "^2.1.24",
     "fluent-ffmpeg": "^2.1.2",
+    "node-schedule": "^2.1.1",
     "reflect-metadata": "^0.1.13",
     "rtsp-ffmpeg": "^0.0.17",
     "rxjs": "^7.8.1"
