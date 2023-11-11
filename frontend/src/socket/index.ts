@@ -8,5 +8,5 @@ const URL =
 export const socket = io(URL, {
   autoConnect: true,
   transports: ['websocket'],
-  secure: true,
+  secure: process.env.NODE_ENV === 'production',
 });
