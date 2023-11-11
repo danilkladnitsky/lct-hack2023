@@ -6,6 +6,8 @@ import { AppModule } from './app.module';
 const fs = require('fs');
 const path = require('path');
 
+const env = process.env.NODE_ENV || 'development';
+
 const httpsOptions = {
   cert: fs.readFileSync(
     path.join(__dirname, '../src/certificate/fullchain.pem'),
@@ -14,10 +16,15 @@ const httpsOptions = {
 };
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule, {
-    cors: true,
-    httpsOptions,
-  });
+  const app = await NestFactory.create(
+    AppModule,
+    env === 'development'
+      ? { cors: true }
+      : {
+          cors: true,
+          httpsOptions,
+        },
+  );
   app.useWebSocketAdapter(new IoAdapter(app));
   await app.listen(3000, '0.0.0.0');
 }

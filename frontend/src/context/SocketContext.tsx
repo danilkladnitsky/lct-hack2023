@@ -1,6 +1,8 @@
 import React, { useContext, useState, useEffect, PropsWithChildren } from 'react';
+import { useSnackbar } from 'notistack';
+
 import { socket } from '../socket';
-import { Camera, CameraFrame } from '../entities';
+import { Camera, CameraFrame, DetectInfo } from '../entities';
 
 interface State {
   cameras: Camera[];
@@ -29,6 +31,7 @@ export const useSocketContext = (): State & Actions => useContext(SocketContext)
 
 export const SocketContextProvider = ({ children }: PropsWithChildren) => {
   const [connectedToServer, setConnectedToServer] = useState(socket.connected);
+  const { enqueueSnackbar } = useSnackbar();
 
   const [cameras, setCameras] = useState<Camera[]>([]);
   const [cameraFrames, setCameraFrames] = useState<CameraFrame[]>([]);
@@ -36,15 +39,23 @@ export const SocketContextProvider = ({ children }: PropsWithChildren) => {
 
   const resetFrames = () => {
     setCameraFrames([]);
-  }
+  };
 
   useEffect(() => {
+    function onDetect(info: DetectInfo) {
+      console.log(info);
+      if (info.boxes.length) {
+        enqueueSnackbar(`Замечена нелегальная торговля: ${info.names} на камере: ${info.camera}`);
+      }
+    }
     function onConnect() {
       setConnectedToServer(true);
+      enqueueSnackbar('Подключены к серверу стриминга видео');
     }
 
     function onDisconnect() {
       setConnectedToServer(false);
+      enqueueSnackbar('Отключены к серверу стриминга видео');
     }
 
     function onCamerasAdd(newCameras: Camera[]) {
@@ -63,8 +74,8 @@ export const SocketContextProvider = ({ children }: PropsWithChildren) => {
           return [frame];
         }
 
-        if (v.find(c => c.camera === frame.camera)) {
-          return v.map((c) => (c.camera === frame.camera ? frame : c))
+        if (v.find((c) => c.camera === frame.camera)) {
+          return v.map((c) => (c.camera === frame.camera ? frame : c));
         }
 
         return [...v, frame];
@@ -75,12 +86,14 @@ export const SocketContextProvider = ({ children }: PropsWithChildren) => {
     socket.on('disconnect', onDisconnect);
     socket.on('added-stream', onCamerasAdd);
     socket.on('cameras', onCamerasFrame);
+    socket.on('detect', onDetect);
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('added-stream', onCamerasAdd);
       socket.off('cameras', onCamerasFrame);
+      socket.off('detect', onDetect);
     };
   }, []);
 
