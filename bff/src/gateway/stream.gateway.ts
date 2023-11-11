@@ -36,6 +36,12 @@ export class StreamGateway implements OnGatewayConnection {
     client.emit('added-stream', this.streamResources);
   }
 
+  @SubscribeMessage('reset-streams')
+  resetAllStreams() {
+    this.streamResources = [];
+    schedule.gracefulShutdown();
+  }
+
   @SubscribeMessage('create-stream')
   createStream(@MessageBody() resource: StreamResource) {
     this.streamResources.push(resource);

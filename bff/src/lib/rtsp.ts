@@ -2,6 +2,7 @@ const ffmpeg = require('fluent-ffmpeg');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
 const fs = require('fs');
+const path = require('path');
 
 ffmpeg.setFfmpegPath('/usr/bin/ffmpeg');
 
@@ -9,7 +10,9 @@ export class RtspManager {
   ffmpeg: any;
 
   async getFrame(url: string, cameraName: string) {
-    const filePath = `static/${cameraName}.jpg`;
+    const filePath = path.join(__dirname + `../../../static/${cameraName}.jpg`);
+
+    console.log(filePath);
 
     const args = [
       'ffmpeg',

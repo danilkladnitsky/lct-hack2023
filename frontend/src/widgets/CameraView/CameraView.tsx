@@ -8,7 +8,9 @@ export const CameraView = () => {
 
   const lastFrame = cameraFrames.find(c => c.camera === selectedCamera?.name);
 
-  const frameContent = `data:image/jpg;base64, ${lastFrame?.frame}`;
+  const base64 = lastFrame?.frame;
+
+  const frameContent = `data:image/jpg;base64, ${base64}`;
 
   return (
     <div className={styles.frame}>
@@ -16,7 +18,7 @@ export const CameraView = () => {
         <div className={styles.title}>{selectedCamera.name}</div>
       </Flex>
       <div className={styles.stream} id="stream">
-        {lastFrame && <img src={frameContent} alt={selectedCamera?.name} />}
+        {base64 && <img src={frameContent} alt={selectedCamera?.name} />}
       </div>
     </div>
   );

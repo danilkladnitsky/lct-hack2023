@@ -23,6 +23,6 @@
     "watchDirectory": "dynamicprioritypolling",
     "fallbackPolling": "dynamicPriority",
     "synchronousWatchDirectory": true,
-    "excludeDirectories": ["**/node_modules", "dist", "test", "static"]
+    "excludeDirectories": ["**/node_modules", "dist", "test", "static", "*.jpg", "*.txt"]
   }
 }

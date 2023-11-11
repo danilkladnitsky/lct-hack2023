@@ -1,9 +1,10 @@
-import { SegmentedControl, Indicator, Group, SegmentedControlItem, Avatar, Badge } from '@mantine/core';
+import { SegmentedControl, Indicator, Group, SegmentedControlItem, Avatar, Badge, Button } from '@mantine/core';
 
 import styles from './Header.module.scss';
 import { WidgetProps } from '../widget.types';
 import classNames from 'classnames';
 import { useSocketContext } from '../../context/SocketContext';
+import { socket } from '../../socket';
 
 const MENU_OPTIONS: SegmentedControlItem[] = [
   {
@@ -17,8 +18,14 @@ const MENU_OPTIONS: SegmentedControlItem[] = [
 ];
 
 export const Header = ({ className }: WidgetProps) => {
-  const { connectedToServer } = useSocketContext();
+  const { connectedToServer, setCameras, setSelectedCamera, cameras, resetFrames } = useSocketContext();
 
+  const resetCameras = () => {
+    socket.emit('reset-streams');
+    setCameras([]);
+    setSelectedCamera(null);
+    resetFrames();
+  };
 
   const status = connectedToServer ? 'online' : 'offline';
 
@@ -29,9 +36,14 @@ export const Header = ({ className }: WidgetProps) => {
         <Badge className={styles.status}>{status}</Badge>
         <SegmentedControl data={MENU_OPTIONS} />
       </Group>
-      <Indicator withBorder inline size={8}>
-        <Avatar radius="sm">AE</Avatar>
-      </Indicator>
+      <Group>
+        <Indicator withBorder inline size={8}>
+          <Avatar radius="sm">AE</Avatar>
+        </Indicator>
+        <Button onClick={resetCameras} variant="danger" disabled={Boolean(cameras.length == 0)}>
+          Сбросить камеры
+        </Button>
+      </Group>
     </div>
   );
 };
