@@ -16,16 +16,16 @@ services:
     ports:
       - "81:80"
 
-  ml:
-    build: ./ML
-    container_name: ml
-    environment:
-      - FLASK_ENV=development
-      - PYTHONUNBUFFERED=True                   
-    restart: on-failure
-    volumes:
-      - ./ml-volume:/ml-volume
-    ports:
-      - "5000:5000"
-    command: python Flask.py
+  # ml:
+  #   build: ./ML
+  #   container_name: ml
+  #   environment:
+  #     - FLASK_ENV=development
+  #     - PYTHONUNBUFFERED=True                   
+  #   restart: on-failure
+  #   volumes:
+  #     - ./ml-volume:/ml-volume
+  #   ports:
+  #     - "5000:5000"
+  #   command: python Flask.py
 
