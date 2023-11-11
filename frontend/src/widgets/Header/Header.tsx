@@ -14,6 +14,7 @@ const MENU_OPTIONS: SegmentedControlItem[] = [
   {
     label: 'Режим разметки',
     value: 'markups',
+    disabled: true
   },
 ];
 
