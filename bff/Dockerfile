@@ -1,6 +1,4 @@
 # Base image
-FROM jrottenberg/ffmpeg
-
 FROM node:20
 
 # Create app directory
@@ -17,6 +15,8 @@ COPY . .
 
 # Creates a "dist" folder with the production build
 RUN npm run build
+
+RUN apk add  --no-cache ffmpeg
 
 # Start the server using the production build
 CMD [ "node", "dist/main.js" ]
