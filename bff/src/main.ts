@@ -3,12 +3,12 @@ import { IoAdapter } from '@nestjs/platform-socket.io';
 
 import { AppModule } from './app.module';
 
-import fullChain from './certificate/fullchain.pem';
-import privkey from './certificate/privkey.pem';
+const fs = require('fs');
+const path = require('path');
 
 const httpsOptions = {
-  cert: fullChain,
-  key: privkey,
+  cert: fs.readFileSync(path.join(__dirname, '../src/certificate/fullchain.pem')),
+  key: fs.readFileSync(path.join(__dirname, '../src/certificate/privkey.pem')),
 };
 
 async function bootstrap() {
