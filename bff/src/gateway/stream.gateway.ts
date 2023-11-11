@@ -49,7 +49,7 @@ export class StreamGateway implements OnGatewayConnection {
     this.server.emit('added-stream', this.streamResources);
 
     schedule.scheduleJob(
-      '*/2 * * * * *',
+      '*/1 * * * * *',
       this.requestFrame.bind(this, resource.name),
     );
   }
@@ -70,7 +70,7 @@ export class StreamGateway implements OnGatewayConnection {
       const newFrame = { camera, frame: message };
       this.server.emit('cameras', newFrame);
 
-      if (this.frameCount === 10) {
+      if (this.frameCount === 3) {
         this.detectTrade(message || '', cameraResource.name)
         this.frameCount = 0;
       } else {
