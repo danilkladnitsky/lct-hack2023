@@ -3,6 +3,17 @@
     position: relative;
 
     background-color: $secondary-background;
+
+    overflow: hidden;
+
+    img {
+        height: inherit;
+        width: 100%;
+        object-fit: cover;
+    }
+}
+
+.selected {
     border: 1px solid $accent-success;
 }
 

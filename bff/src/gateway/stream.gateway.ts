@@ -42,7 +42,7 @@ export class StreamGateway implements OnGatewayConnection {
     this.server.emit('added-stream', this.streamResources);
 
     schedule.scheduleJob(
-      '*/5 * * * * *',
+      '*/2 * * * * *',
       this.requestFrame.bind(this, resource.name),
     );
   }
@@ -56,9 +56,8 @@ export class StreamGateway implements OnGatewayConnection {
 
     const { isOk, message } = await this.ffmpegClient.getFrame(
       cameraResource.url,
+      cameraResource.name,
     );
-
-    console.log(isOk, message)
 
     if (isOk) {
       const newFrame = { camera, frame: message };

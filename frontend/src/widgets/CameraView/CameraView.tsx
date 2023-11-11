@@ -1,7 +1,6 @@
 import { Flex } from '@mantine/core';
 
 import styles from './CameraView.module.scss';
-import { DetectedFrames } from '../DetectedFrames/';
 import { useSocketContext } from '../../context/SocketContext';
 
 export const CameraView = () => {
@@ -19,7 +18,6 @@ export const CameraView = () => {
       <div className={styles.stream} id="stream">
         {lastFrame && <img src={frameContent} alt={selectedCamera?.name} />}
       </div>
-      <DetectedFrames className={styles.timeline} />
     </div>
   );
 };

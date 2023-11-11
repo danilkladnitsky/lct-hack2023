@@ -1,40 +1,42 @@
 const ffmpeg = require('fluent-ffmpeg');
 const util = require('util');
 const exec = util.promisify(require('child_process').exec);
-const fs = require('fs/promises');
+const fs = require('fs');
 
 ffmpeg.setFfmpegPath('/usr/bin/ffmpeg');
 
 export class RtspManager {
   ffmpeg: any;
 
-  async getFrame(url: string) {
+  async getFrame(url: string, cameraName: string) {
+    const filePath = `static/${cameraName}.jpg`;
+
     const args = [
       'ffmpeg',
-      '-loglevel quiet',
       '-rtsp_transport tcp -y',
       '-i',
       `'${url}'`,
       '-f image2pipe -r 10 -q:v 3 -frames 1 -c:v png -vf scale=480:320',
-      'static/myFrame.jpg',
+      filePath,
       //   saveTo,
     ];
 
     const cmd = args.join(' ');
 
     try {
-      const { stderr, stdout } = await exec(cmd, { maxBuffer: undefined });
+      await exec(cmd, { maxBuffer: undefined });
 
-      if (stderr) {
-        console.error(stderr, stdout);
-        return { isOk: false, message: stderr };
+      const hasFile = await fs.existsSync(filePath);
+
+      if (hasFile) {
+        const contents = await fs.promises.readFile(filePath, {
+          encoding: 'base64',
+        });
+
+        return { isOk: true, message: contents };
+      } else {
+        return { isOk: false, message: 'no file' };
       }
-
-      const contents = await fs.readFile('static/myFrame.jpg', {
-        encoding: 'base64',
-      });
-
-      return { isOk: true, message: contents };
     } catch (err) {
       console.error(err);
       return { isOk: false, message: err };
