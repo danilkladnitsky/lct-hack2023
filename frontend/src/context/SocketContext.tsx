@@ -44,8 +44,8 @@ export const SocketContextProvider = ({ children }: PropsWithChildren) => {
   useEffect(() => {
     function onDetect(info: DetectInfo) {
       console.log(info);
-      if (info.boxes.length) {
-        enqueueSnackbar(`Замечена нелегальная торговля: ${info.names} на камере: ${info.camera}`);
+      if (info.boxes.length > 0) {
+        enqueueSnackbar(`Замечена нелегальная торговля: ${info.names.join(" ")} на камере: ${info.camera}`);
       }
     }
     function onConnect() {
